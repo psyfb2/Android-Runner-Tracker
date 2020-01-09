@@ -12,6 +12,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
@@ -23,8 +24,14 @@ public class LocationService extends Service {
 
     private final String CHANNEL_ID = "100";
     private final int NOTIFICATION_ID = 001;
+    private long startTime = 0;
 
-    public LocationService() {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d("mdp", "Location Service created");
+
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new MyLocationListener();
 
@@ -38,11 +45,7 @@ public class LocationService extends Service {
         }
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d("mdp", "Location Service created");
-
+    private void addNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -94,28 +97,29 @@ public class LocationService extends Service {
         return locationListener.getDistanceOfJourney();
     }
 
-    protected void newJourney() {
-        // remove all locations stored in locationListener
-        locationListener.newJourney();
-    }
-
-    protected void pauseJourney() {
-        // stop getting updates on new locations
-        locationListener.setPaused(true);
-    }
-
     protected void playJourney() {
         // start recording new locations
-        locationListener.setPaused(false);
+        addNotification();
+        locationListener.newJourney();
+        startTime = SystemClock.elapsedRealtime();
     }
 
-    protected boolean getPaused() {
-        return locationListener.getPaused();
+    protected double getDuration() {
+        if(startTime == 0) {
+            return 0.0;
+        }
+        long endTime = SystemClock.elapsedRealtime();
+        long elapsedMilliSeconds = endTime - startTime;
+
+        return elapsedMilliSeconds / 1000.0;
     }
 
-    protected void saveJourney(float duration) {
+    protected boolean currentlyTracking() {
+        return startTime != 0;
+    }
+
+    protected void saveJourney() {
         // save journey to database using content provider
-        // the activity will keep track of time using chronometer and will need to save this also
 
 
     }
@@ -128,24 +132,19 @@ public class LocationService extends Service {
             return LocationService.this.getDistance();
         }
 
-        public boolean getPaused() {
-            return LocationService.this.getPaused();
+        public double getDuration() {
+            // get duration in seconds
+            return LocationService.this.getDuration();
         }
 
-        public void newJourney() {
-            LocationService.this.newJourney();
-        }
-
-        public void pauseJourney() {
-            LocationService.this.pauseJourney();
-        }
+        public boolean currentlyTracking() {return LocationService.this.currentlyTracking();}
 
         public void playJourney() {
             LocationService.this.playJourney();
         }
 
-        public void saveJourney(float duration) {
-            LocationService.this.saveJourney(duration);
+        public void saveJourney() {
+            LocationService.this.saveJourney();
         }
     }
 }

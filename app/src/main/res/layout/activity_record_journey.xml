@@ -28,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="25dp"
-                android:text="0 KM/H"
+                android:text="0.00 KM/H"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@android:color/holo_green_dark"
                 app:layout_constraintBaseline_toBaselineOf="@+id/textView9"
@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="25dp"
-                android:text="00:00"
+                android:text="00:00:00"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@android:color/holo_green_dark"
                 app:layout_constraintBaseline_toBaselineOf="@+id/duration"
@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="25dp"
-                android:text="0 KM"
+                android:text="0.00 KM"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@android:color/holo_green_dark"
                 app:layout_constraintBaseline_toBaselineOf="@+id/distance"
@@ -106,11 +106,11 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/pauseButton"
+                android:id="@+id/startButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="onClickPauseOrPlay"
+                android:onClick="onClickPlay"
                 android:text="START" />
 
             <Button
@@ -129,6 +129,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
             android:text="Stopping this journey will automatically save it to your list of journeys" />
 
     </LinearLayout>

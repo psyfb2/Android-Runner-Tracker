@@ -19,9 +19,8 @@ TO DO
     6. Allow user to see a list of recorded journeys
     7. Clicking on a recorded journey displays more information (rating, comments, picture, time, distance, average distance, path on google maps)
     8. Allow user to delete a journey
-    9. Allow use to see stastics page which shows how far ran today, this week, this month, all time and could graph these
+    9. Allow user to see stastics page which shows how far ran today, this week, this month, all time and could graph these
     10. Allow user to set a goal for km to run every week, display whether the goal has been reached or not in the app.
-    11. Allow user to track not only running but also cycling
 
     Need
         - Service (for GPS tracking)
