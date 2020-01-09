@@ -4,7 +4,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -17,6 +19,10 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class LocationService extends Service {
     private LocationManager locationManager;
     private MyLocationListener locationListener;
@@ -25,7 +31,7 @@ public class LocationService extends Service {
     private final String CHANNEL_ID = "100";
     private final int NOTIFICATION_ID = 001;
     private long startTime = 0;
-
+    private long stopTime = 0;
 
     @Override
     public void onCreate() {
@@ -34,10 +40,11 @@ public class LocationService extends Service {
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new MyLocationListener();
+        locationListener.recordLocations = false;
 
         try {
             //
-            locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 5, 5, locationListener);
+            locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 3, 3, locationListener);
         } catch(SecurityException e) {
             // don't have the permission to access GPS
             Log.d("mdp", "No Permissions for GPS");
@@ -97,20 +104,29 @@ public class LocationService extends Service {
         return locationListener.getDistanceOfJourney();
     }
 
+    /* Display notification and start recording GPS locations for a new, also start timer */
     protected void playJourney() {
-        // start recording new locations
         addNotification();
         locationListener.newJourney();
+        locationListener.recordLocations = true;
         startTime = SystemClock.elapsedRealtime();
+        stopTime = 0;
     }
 
+    /* Get the duration of the current journey */
     protected double getDuration() {
         if(startTime == 0) {
             return 0.0;
         }
-        long endTime = SystemClock.elapsedRealtime();
-        long elapsedMilliSeconds = endTime - startTime;
 
+        long endTime = SystemClock.elapsedRealtime();
+
+        if(stopTime != 0) {
+            // saveJourney has been called, until playJourney is called again display constant time
+            endTime = stopTime;
+        }
+
+        long elapsedMilliSeconds = endTime - startTime;
         return elapsedMilliSeconds / 1000.0;
     }
 
@@ -118,12 +134,44 @@ public class LocationService extends Service {
         return startTime != 0;
     }
 
+    /* Save journey to the database and stop saving GPS locations, also removes the notification */
     protected void saveJourney() {
+        // reset state by clearing locations, stop recording, reset startTime
+        locationListener.recordLocations = false;
+        stopTime = SystemClock.elapsedRealtime();
+        startTime = 0;
+        locationListener.newJourney();
+
         // save journey to database using content provider
+        ContentValues journeyData = new ContentValues();
+        journeyData.put(JourneyProviderContract.J_distance, getDistance());
+        journeyData.put(JourneyProviderContract.J_DURATION, (long) getDuration());
+        journeyData.put(JourneyProviderContract.J_DATE, getDateTime());
 
+        long journeyID = Long.parseLong(getContentResolver().insert(JourneyProviderContract.JOURNEY_URI, journeyData).getLastPathSegment());
 
+        // for each location belonging to this journey save it to the location table linked to this journey
+        for(Location location : locationListener.getLocations()) {
+            ContentValues locationData = new ContentValues();
+            locationData.put(JourneyProviderContract.L_JID, journeyID);
+            locationData.put(JourneyProviderContract.L_ALTITUDE, location.getAltitude());
+            locationData.put(JourneyProviderContract.L_LATITUDE, location.getLatitude());
+            locationData.put(JourneyProviderContract.L_LONGITUDE, location.getLongitude());
+
+            getContentResolver().insert(JourneyProviderContract.LOCATION_URI, locationData);
+        }
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
+
+        Log.d("mdp", "Journey saved with id = " + journeyID);
     }
 
+    private String getDateTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        return formatter.format(date);
+    }
 
     public class LocationServiceBinder extends Binder {
         // would like to get the distance in km for activity

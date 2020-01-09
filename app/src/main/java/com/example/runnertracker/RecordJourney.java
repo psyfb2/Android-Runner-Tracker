@@ -1,11 +1,19 @@
 package com.example.runnertracker;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -26,6 +34,7 @@ public class RecordJourney extends AppCompatActivity {
 
     private Button playButton;
     private Button stopButton;
+    private static final int PERMISSION_GPS_CODE = 1;
 
     // will poll the location service for distance and duration
     private Handler postBack = new Handler();
@@ -36,13 +45,7 @@ public class RecordJourney extends AppCompatActivity {
             locationService = (LocationService.LocationServiceBinder) iBinder;
 
             // if currently tracking then enable stopButton and disable startButton
-            if(locationService.currentlyTracking()) {
-                stopButton.setEnabled(true);
-                playButton.setEnabled(false);
-            } else {
-                stopButton.setEnabled(false);
-                playButton.setEnabled(true);
-            }
+            initButtons();
 
             new Thread(new Runnable() {
                 @Override
@@ -50,7 +53,7 @@ public class RecordJourney extends AppCompatActivity {
                     while (locationService != null) {
                         // get the distance and duration from the surface
                         float d = (float) locationService.getDuration();
-                        final long duration = (long) d;  // in seconds
+                        long duration = (long) d;  // in seconds
                         float distance = locationService.getDistance();
 
                         long hours = duration / 3600;
@@ -92,6 +95,27 @@ public class RecordJourney extends AppCompatActivity {
         }
     };
 
+    // whenever activity is reloaded while still tracking a journey (if back button is clicked for example)
+    private void initButtons() {
+        // no permissions means no buttons
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            stopButton.setEnabled(false);
+            playButton.setEnabled(false);
+            return;
+        }
+
+        // if currently tracking then enable stopButton and disable startButton
+        if(locationService != null && locationService.currentlyTracking()) {
+            stopButton.setEnabled(true);
+            playButton.setEnabled(false);
+            gif.play();
+        } else {
+            stopButton.setEnabled(false);
+            playButton.setEnabled(true);
+        }
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +136,8 @@ public class RecordJourney extends AppCompatActivity {
         stopButton.setEnabled(false);
         playButton.setEnabled(false);
 
+        handlePermissions();
+
         // start the service so that it persists outside of the lifetime of this activity
         // and also bind to it to gain control over the service
         startService(new Intent(this, LocationService.class));
@@ -130,8 +156,16 @@ public class RecordJourney extends AppCompatActivity {
 
     public void onClickStop(View view) {
         // save the current journey to the database
+        float distance = locationService.getDistance();
+        locationService.saveJourney();
 
+        playButton.setEnabled(false);
+        stopButton.setEnabled(false);
 
+        gif.pause();
+
+        DialogFragment modal = FinishedTrackingDialogue.newInstance(String.format("%.2f KM", distance));
+        modal.show(getSupportFragmentManager(), "Finished");
     }
 
     @Override
@@ -144,5 +178,95 @@ public class RecordJourney extends AppCompatActivity {
             lsc = null;
         }
     }
-    
+
+    public static class FinishedTrackingDialogue extends DialogFragment {
+        public static  FinishedTrackingDialogue newInstance(String distance) {
+            Bundle savedInstanceState = new Bundle();
+            savedInstanceState.putString("distance", distance);
+            FinishedTrackingDialogue frag = new FinishedTrackingDialogue();
+            frag.setArguments(savedInstanceState);
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Your Journey has been saved. You ran a total of " + getArguments().getString("distance") + " KM")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // go back to home screen
+                            getActivity().finish();
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
+
+    // PERMISSION THINGS
+
+    @Override
+    public void onRequestPermissionsResult(int reqCode, String[] permissions, int[] results) {
+        switch(reqCode) {
+            case PERMISSION_GPS_CODE:
+                if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission granted
+                    initButtons();
+                } else {
+                    // permission denied, disable GPS tracking buttons
+                    stopButton.setEnabled(false);
+                    playButton.setEnabled(false);
+                }
+                return;
+
+        }
+    }
+
+
+    public static class NoPermissionDialogue extends DialogFragment {
+        public static  NoPermissionDialogue newInstance() {
+            NoPermissionDialogue frag = new NoPermissionDialogue();
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("GPS is required to track your journey!")
+                    .setPositiveButton("Enable GPS", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // user agreed to enable GPS
+                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_GPS_CODE);
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // dialogue was cancelled
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
+    private void handlePermissions() {
+        // if don't have GPS permissions then request this permission from the user.
+        // if not granted the permission disable the start button
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // the user has already declined request to allow GPS
+                // give them a pop up explaining why its needed and re-ask
+                DialogFragment modal = NoPermissionDialogue.newInstance();
+                modal.show(getSupportFragmentManager(), "Permissions");
+            } else {
+                // request the permission
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_GPS_CODE);
+            }
+
+        }
+    }
 }

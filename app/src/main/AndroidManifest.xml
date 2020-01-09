@@ -11,10 +11,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <service
             android:name=".LocationService"
             android:enabled="true"
             android:exported="true"></service>
+
+        <provider
+            android:name=".JourneyProvider"
+            android:authorities="com.example.runnertracker.JourneyProvider"
+            android:exported="true"
+            android:permission="android.permission.ACCESS_FINE_LOCATION"/>
 
         <activity android:name=".RecordJourney" />
         <activity android:name=".MainActivity">
@@ -25,5 +32,7 @@
             </intent-filter>
         </activity>
     </application>
+
+
 
 </manifest>

@@ -16,22 +16,19 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE journey (" +
                 "journeyID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
                 "duration BIGINT NOT NULL," +
-                "distance FLOAT NOT NULL," +
-                "rating INTEGER ," +
-                "comment varchar(256)," +
-                "date DATE ," +
-                "image BLOB);");
+                "distance REAL NOT NULL," +
+                "rating INTEGER DEFAULT NULL," +
+                "comment varchar(256) DEFAULT NULL," +
+                "date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                "image BLOB DEFAULT NULL);");
 
         db.execSQL("CREATE TABLE location (" +
-                " journeyID INT NOT NULL," +
-                " altitude INT NOT NULL," +
-                " longitude INT NOT NULL," +
-                " latitude INT NOT NULL," +
-                " CONSTRAINT fk1 FOREIGN KEY (journeyID) REFERENCES journey (journeyID) ON DELETE CASCADE," +
-                " CONSTRAINT locationID PRIMARY KEY (journeyID) );");
-
-        // add some test data
-        db.execSQL("INSERT INTO journey VALUES (1, 75, 1.5, 3)");
+                " locationID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                " journeyID INTEGER NOT NULL," +
+                " altitude REAL NOT NULL," +
+                " longitude REAL NOT NULL," +
+                " latitude REAL NOT NULL," +
+                " CONSTRAINT fk1 FOREIGN KEY (journeyID) REFERENCES journey (journeyID) ON DELETE CASCADE);");
     }
 
     // called when the database file exists but the version number stored in the db

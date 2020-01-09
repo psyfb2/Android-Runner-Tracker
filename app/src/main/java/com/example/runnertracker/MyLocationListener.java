@@ -9,9 +9,11 @@ import java.util.ArrayList;
 
 public class MyLocationListener implements LocationListener {
     ArrayList<Location> locations;
+    boolean recordLocations;
 
     public MyLocationListener() {
         newJourney();
+        recordLocations = false;
     }
 
     public void newJourney() {
@@ -27,13 +29,18 @@ public class MyLocationListener implements LocationListener {
         return locations.get(0).distanceTo(locations.get(locations.size() - 1)) / 1000;
     }
 
+    public ArrayList<Location> getLocations() {
+        return locations;
+    }
+
+
     @Override
     public void onLocationChanged(Location location) {
         // called when the location is changed. Can obtain latitude, longitude, altitude.
         // use location.distanceTo(otherLocation) to get a distance between two locations
-        Log.d("mdp", location.getLatitude() + " " + location.getLongitude());
-        locations.add(location);
-
+        if(recordLocations) {
+            locations.add(location);
+        }
     }
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
