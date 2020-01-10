@@ -43,12 +43,10 @@ public class LocationService extends Service {
         locationListener.recordLocations = false;
 
         try {
-            //
             locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 3, 3, locationListener);
         } catch(SecurityException e) {
             // don't have the permission to access GPS
             Log.d("mdp", "No Permissions for GPS");
-
         }
     }
 
@@ -167,6 +165,16 @@ public class LocationService extends Service {
         Log.d("mdp", "Journey saved with id = " + journeyID);
     }
 
+    public void notifyGPSEnabled() {
+        try {
+            locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 3, 3, locationListener);
+        } catch(SecurityException e) {
+            // don't have the permission to access GPS
+            Log.d("mdp", "No Permissions for GPS");
+        }
+    }
+
+
     private String getDateTime() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
@@ -194,5 +202,7 @@ public class LocationService extends Service {
         public void saveJourney() {
             LocationService.this.saveJourney();
         }
+
+        public void notifyGPSEnabled() { LocationService.this.notifyGPSEnabled();}
     }
 }

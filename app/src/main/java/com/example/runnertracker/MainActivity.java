@@ -16,10 +16,10 @@ TO DO
     3. Allow user to attach image to a saved journey
     4. Allow user to rate a journey out of 5
     5. Allow user to add comments about a certain journey
-    6. Allow user to see a list of recorded journeys
+    6. Allow user to see a list of recorded journeys filtered by date (DONE)
     7. Clicking on a recorded journey displays more information (rating, comments, picture, time, distance, average distance, path on google maps)
     8. Allow user to delete a journey
-    9. Allow user to see stastics page which shows how far ran today, this week, this month, all time and could graph these
+    9. Allow user to see statistics page which shows how far ran today, this week, this month, all time and could graph these
     10. Allow user to set a goal for km to run every week, display whether the goal has been reached or not in the app.
     11. Ask user for GPS permissions (DONE)
 
@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickView(View v) {
         // go to the activity for displaying journeys
-
+        Intent view = new Intent(MainActivity.this, ViewJourneys.class);
+        startActivity(view);
     }
 
     public void onClickStatistics(View v) {

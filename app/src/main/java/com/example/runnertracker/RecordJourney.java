@@ -153,7 +153,6 @@ public class RecordJourney extends AppCompatActivity {
         stopButton.setEnabled(true);
     }
 
-
     public void onClickStop(View view) {
         // save the current journey to the database
         float distance = locationService.getDistance();
@@ -214,6 +213,9 @@ public class RecordJourney extends AppCompatActivity {
                 if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission granted
                     initButtons();
+                    if(locationService != null) {
+                        locationService.notifyGPSEnabled();
+                    }
                 } else {
                     // permission denied, disable GPS tracking buttons
                     stopButton.setEnabled(false);

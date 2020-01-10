@@ -12,6 +12,7 @@ public class JourneyProviderContract {
     public static final String J_ID = "journeyID";
     public static final String J_DURATION = "duration";
     public static final String J_distance = "distance";
+    public static final String J_NAME = "name";
     public static final String J_RATING = "rating";
     public static final String J_COMMENT = "comment";
     public static final String J_DATE = "date";

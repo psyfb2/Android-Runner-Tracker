@@ -17,6 +17,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "journeyID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
                 "duration BIGINT NOT NULL," +
                 "distance REAL NOT NULL," +
+                "name INTEGER DEFAULT 'Recorded Journey'," +
                 "rating INTEGER DEFAULT NULL," +
                 "comment varchar(256) DEFAULT NULL," +
                 "date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
