@@ -134,12 +134,6 @@ public class LocationService extends Service {
 
     /* Save journey to the database and stop saving GPS locations, also removes the notification */
     protected void saveJourney() {
-        // reset state by clearing locations, stop recording, reset startTime
-        locationListener.recordLocations = false;
-        stopTime = SystemClock.elapsedRealtime();
-        startTime = 0;
-        locationListener.newJourney();
-
         // save journey to database using content provider
         ContentValues journeyData = new ContentValues();
         journeyData.put(JourneyProviderContract.J_distance, getDistance());
@@ -161,6 +155,12 @@ public class LocationService extends Service {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_ID);
+
+        // reset state by clearing locations, stop recording, reset startTime
+        locationListener.recordLocations = false;
+        stopTime = SystemClock.elapsedRealtime();
+        startTime = 0;
+        locationListener.newJourney();
 
         Log.d("mdp", "Journey saved with id = " + journeyID);
     }

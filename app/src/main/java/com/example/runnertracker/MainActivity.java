@@ -17,11 +17,12 @@ TO DO
     4. Allow user to rate a journey out of 5
     5. Allow user to add comments about a certain journey
     6. Allow user to see a list of recorded journeys filtered by date (DONE)
-    7. Clicking on a recorded journey displays more information (rating, comments, picture, time, distance, average distance, path on google maps)
+    7. Clicking on a recorded journey displays more information (rating, comments, picture, time, distance, average speed, path on google maps)
     8. Allow user to delete a journey
     9. Allow user to see statistics page which shows how far ran today, this week, this month, all time and could graph these
     10. Allow user to set a goal for km to run every week, display whether the goal has been reached or not in the app.
     11. Ask user for GPS permissions (DONE)
+    12 Allow tracking of cycling
 
     Need
         - Service (for GPS tracking)

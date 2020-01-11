@@ -17,10 +17,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 "journeyID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
                 "duration BIGINT NOT NULL," +
                 "distance REAL NOT NULL," +
-                "name INTEGER DEFAULT 'Recorded Journey'," +
-                "rating INTEGER DEFAULT NULL," +
-                "comment varchar(256) DEFAULT NULL," +
-                "date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                "date DATETIME NOT NULL," +
+                "name varchar(256) NOT NULL DEFAULT 'Recorded Journey'," +
+                "rating INTEGER NOT NULL DEFAULT 1," +
+                "comment varchar(256) NOT NULL DEFAULT ''," +
                 "image BLOB DEFAULT NULL);");
 
         db.execSQL("CREATE TABLE location (" +

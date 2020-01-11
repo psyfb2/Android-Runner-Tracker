@@ -3,12 +3,15 @@ package com.example.runnertracker;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.database.Cursor;
+import android.database.CursorWrapper;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -29,6 +32,22 @@ public class ViewJourneys extends AppCompatActivity {
         setContentView(R.layout.activity_view_journeys);
 
         setUpDateDialogue();
+
+        journeyList.setClickable(true);
+        journeyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                CursorWrapper o = (CursorWrapper) journeyList.getItemAtPosition(position);
+                long journeyID = o.getLong(o.getColumnIndex("_id"));
+
+                // start the single journey activity sending it the journeyID
+                Bundle b = new Bundle();
+                b.putLong("journeyID", journeyID);
+                Intent singleJourney = new Intent(ViewJourneys.this, ViewSingleJourney.class);
+                singleJourney.putExtras(b);
+                startActivity(singleJourney);
+            }
+        });
     }
 
     private void setUpDateDialogue() {
@@ -99,7 +118,7 @@ public class ViewJourneys extends AppCompatActivity {
         Log.d("mdp", "Searching for date " + date);
 
         Cursor c = getContentResolver().query(JourneyProviderContract.JOURNEY_URI,
-                new String[] {"rowid _id", JourneyProviderContract.J_NAME}, JourneyProviderContract.J_DATE + " = ?", new String[] {date}, JourneyProviderContract.J_NAME + " ASC");
+                new String[] {JourneyProviderContract.J_ID + " _id", JourneyProviderContract.J_NAME}, JourneyProviderContract.J_DATE + " = ?", new String[] {date}, JourneyProviderContract.J_NAME + " ASC");
 
         Log.d("mdp", "Journeys Loaded: " + c.getCount());
 
