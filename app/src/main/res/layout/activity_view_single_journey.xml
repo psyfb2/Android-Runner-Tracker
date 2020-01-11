@@ -17,7 +17,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/ViewSingleJourney_journeyImg"
         android:layout_width="match_parent"
         android:layout_height="171dp"
         app:srcCompat="@drawable/runner" />

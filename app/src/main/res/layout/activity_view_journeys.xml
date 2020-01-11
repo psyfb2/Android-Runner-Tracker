@@ -34,7 +34,7 @@
         android:text="Click on a specific journey for more information" />
 
     <ListView
-        android:id="@+id/journeysList"
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

@@ -63,6 +63,19 @@
         android:hint="3"
         android:inputType="number" />
 
+    <ImageView
+        android:id="@+id/journeyImg"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        app:srcCompat="@drawable/runner" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClickChangeImage"
+        android:text="Change Image" />
+
     <Button
         android:id="@+id/button5"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"

@@ -5,16 +5,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 public class ViewSingleJourney extends AppCompatActivity {
+    private ImageView journeyImg;
     private TextView distanceTV;
     private TextView avgSpeedTV;
     private TextView timeTV;
@@ -22,7 +29,9 @@ public class ViewSingleJourney extends AppCompatActivity {
     private TextView ratingTV;
     private TextView commentTV;
     private TextView titleTV;
+
     private long journeyID;
+
     private Handler h = new Handler();
 
     // observer is notified when insert or delete in the given URI occurs
@@ -50,6 +59,7 @@ public class ViewSingleJourney extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
 
+        journeyImg = findViewById(R.id.ViewSingleJourney_journeyImg);
         distanceTV = findViewById(R.id.ViewSingleJourney_distanceText);
         avgSpeedTV = findViewById(R.id.ViewSingleJourney_avgSpeed);
         timeTV     = findViewById(R.id.ViewSingleJourney_durationText);
@@ -104,6 +114,19 @@ public class ViewSingleJourney extends AppCompatActivity {
             ratingTV.setText(c.getInt(c.getColumnIndex(JourneyProviderContract.J_RATING)) + "");
             commentTV.setText(c.getString(c.getColumnIndex(JourneyProviderContract.J_COMMENT)));
             titleTV.setText(c.getString(c.getColumnIndex(JourneyProviderContract.J_NAME)));
+
+            // if an image has been set by user display it, else default image is displayed
+            String strUri = c.getString(c.getColumnIndex(JourneyProviderContract.J_IMAGE));
+            if(strUri != null) {
+                try {
+                    final Uri imageUri = Uri.parse(strUri);
+                    final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    journeyImg.setImageBitmap(selectedImage);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
