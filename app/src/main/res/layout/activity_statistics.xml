@@ -152,6 +152,7 @@
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/barchart"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:minHeight="200dp"/>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

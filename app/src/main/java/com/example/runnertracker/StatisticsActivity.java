@@ -14,6 +14,7 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -167,6 +168,7 @@ public class StatisticsActivity extends AppCompatActivity {
                     Calendar cal = Calendar.getInstance();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     cal.setTime(sdf.parse(date));
+                    cal.setFirstDayOfWeek(Calendar.MONDAY);
 
                     // set the calendar to monday of the current week
                     cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
@@ -225,8 +227,11 @@ public class StatisticsActivity extends AppCompatActivity {
 
         BarData data = new BarData(labels, bardataset);
         barChart.setData(data); // set the data and list of labels into chart
-        barChart.setDescription("Distance ran for each day of week of selected date");  // set the description
+        barChart.setDescription("Distance (KM)");  // set the description
         bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
-        barChart.animateY(5000);
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setAxisMinValue(0f);
+        barChart.animateY(3000);
     }
 }
