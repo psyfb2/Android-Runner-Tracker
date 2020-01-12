@@ -101,7 +101,7 @@ public class ViewJourneys extends ListActivity {
                             final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                             final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                             img.setImageBitmap(selectedImage);
-                        } catch (FileNotFoundException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }

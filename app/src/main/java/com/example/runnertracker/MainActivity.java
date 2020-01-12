@@ -1,8 +1,16 @@
 package com.example.runnertracker;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +39,9 @@ TO DO
         - Broadcast Receiver to register callbacks
  */
 public class MainActivity extends AppCompatActivity {
+
+    private static final int PERMISSION_GPS_CODE = 1;
+    private static final int PERMISSION_COAL_GPS_CODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -3,6 +3,7 @@
     package="com.example.runnertracker">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EditJourney"></activity>
+        <activity android:name=".StatisticsActivity"></activity>
+        <activity android:name=".MapsActivity" />
+        <activity android:name=".EditJourney" />
         <activity android:name=".ViewSingleJourney" />
         <activity android:name=".ViewJourneys" />
 
@@ -33,6 +36,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/google_maps_key" />
     </application>
 
 </manifest>

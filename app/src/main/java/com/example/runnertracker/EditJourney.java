@@ -80,19 +80,28 @@ public class EditJourney extends AppCompatActivity {
     protected void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
 
-        if (resultCode == RESULT_OK) {
-            try {
-                final Uri imageUri = data.getData();
-                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                journeyImg.setImageBitmap(selectedImage);
-                selectedJourneyImg = imageUri;
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+        // get the URI from the selected image
+        switch(reqCode) {
+            case RESULT_LOAD_IMG: {
+                if (resultCode == RESULT_OK) {
+                    try {
+                        final Uri imageUri = data.getData();
 
-        }else {
-            Toast.makeText(EditJourney.this, "You didn't pick an Image",Toast.LENGTH_LONG).show();
+                        // make the URI persistent
+                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                        final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                        final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                        journeyImg.setImageBitmap(selectedImage);
+                        selectedJourneyImg = imageUri;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }else {
+                    Toast.makeText(EditJourney.this, "You didn't pick an Image",Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 
@@ -114,7 +123,7 @@ public class EditJourney extends AppCompatActivity {
                     final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                     final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                     journeyImg.setImageBitmap(selectedImage);
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

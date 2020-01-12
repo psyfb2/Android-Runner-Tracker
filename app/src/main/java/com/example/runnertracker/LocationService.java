@@ -174,7 +174,6 @@ public class LocationService extends Service {
         }
     }
 
-
     private String getDateTime() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();

@@ -83,6 +83,15 @@ public class ViewSingleJourney extends AppCompatActivity {
         startActivity(editActivity);
     }
 
+    public void onClickMap(View v) {
+        // display this journey on a google map activity
+        Intent map = new Intent(ViewSingleJourney.this, MapsActivity.class);
+        Bundle b = new Bundle();
+        b.putLong("journeyID", journeyID);
+        map.putExtras(b);
+        startActivity(map);
+    }
+
     private void populateView() {
         // use content provider to load data from the database and display on the text views
         Cursor c = getContentResolver().query(Uri.withAppendedPath(JourneyProviderContract.JOURNEY_URI,
@@ -123,7 +132,7 @@ public class ViewSingleJourney extends AppCompatActivity {
                     final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                     final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                     journeyImg.setImageBitmap(selectedImage);
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
