@@ -130,7 +130,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
-                android:text="Record Distance in 1 Day:"
+                android:text="Record Distance in 1 Journey:"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@android:color/holo_green_dark"
                 android:textSize="18sp"

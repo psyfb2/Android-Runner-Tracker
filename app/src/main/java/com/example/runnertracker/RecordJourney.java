@@ -138,9 +138,13 @@ public class RecordJourney extends AppCompatActivity {
         playButton.setEnabled(false);
 
         // register broadcast receiver to receive low battery broadcasts
-        MyReceiver receiver = new MyReceiver();
-        registerReceiver(receiver, new IntentFilter(
-                Intent.ACTION_BATTERY_LOW));
+        try {
+            MyReceiver receiver = new MyReceiver();
+            registerReceiver(receiver, new IntentFilter(
+                    Intent.ACTION_BATTERY_LOW));
+        } catch(IllegalArgumentException  e) {
+        }
+
 
         handlePermissions();
 
@@ -178,8 +182,11 @@ public class RecordJourney extends AppCompatActivity {
         super.onDestroy();
 
         // un-register this receiver since we only need it while recording GPS
-        MyReceiver receiver = new MyReceiver();
-        unregisterReceiver(receiver);
+        try {
+            MyReceiver receiver = new MyReceiver();
+            unregisterReceiver(receiver);
+        } catch(IllegalArgumentException  e) {
+        }
 
         // unbind to the service (if we are the only binding activity then the service will be destroyed)
         if(lsc != null) {

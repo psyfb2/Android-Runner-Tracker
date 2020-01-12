@@ -47,7 +47,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
         recordDistance  = findViewById(R.id.Statistics_recordDistance);
         distanceToday   = findViewById(R.id.Statistics_distanceToday);
-        timeToday       = findViewById(R.id.Statistics_distanceToday);
+        timeToday       = findViewById(R.id.Statistics_timeToday);
         distanceAllTime = findViewById(R.id.Statistics_distanceAllTime);
         dateText        = findViewById(R.id.Statistics_selectDate);
         barChart        = findViewById(R.id.barchart);
@@ -164,6 +164,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
                 // load journeys for this week to display on the bar chart
                 ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
+                float[] distancesOnDays = {0, 0, 0, 0, 0, 0, 0};
                 try {
                     Calendar cal = Calendar.getInstance();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -186,7 +187,12 @@ public class StatisticsActivity extends AppCompatActivity {
                             new String[] {mon, sun}, null);
                     try {
                         for(int i = 0; c.moveToNext(); i++) {
-                            entries.add(new BarEntry((float) c.getDouble(c.getColumnIndex(JourneyProviderContract.J_distance)), i));
+                            // put each journey into the bar chart depending on what day it is
+                            String date = c.getString(c.getColumnIndex(JourneyProviderContract.J_DATE));
+                            cal = Calendar.getInstance();
+                            cal.setTime(sdf.parse(date));
+                            int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK); // 1 = sunday, 2 = mon ... 7 = sat
+                            distancesOnDays[dayOfWeek - 1] += (float) c.getDouble(c.getColumnIndex(JourneyProviderContract.J_distance));
                         }
                     } finally {
                         c.close();
@@ -195,6 +201,11 @@ public class StatisticsActivity extends AppCompatActivity {
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
+                for(int i = 1; i < distancesOnDays.length; i++) {
+                    // don't add sunday first, add it last
+                    entries.add(new BarEntry(distancesOnDays[i], i - 1));
+                }
+                entries.add(new BarEntry(distancesOnDays[0], distancesOnDays.length - 1));
                 final ArrayList<BarEntry> entries_ = entries;
 
                 // post back text view updates to UI thread
