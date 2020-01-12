@@ -10,14 +10,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class ViewSingleJourney extends AppCompatActivity {
@@ -60,9 +56,9 @@ public class ViewSingleJourney extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
 
         journeyImg = findViewById(R.id.ViewSingleJourney_journeyImg);
-        distanceTV = findViewById(R.id.ViewSingleJourney_distanceText);
-        avgSpeedTV = findViewById(R.id.ViewSingleJourney_avgSpeed);
-        timeTV     = findViewById(R.id.ViewSingleJourney_durationText);
+        distanceTV = findViewById(R.id.Statistics_recordDistance);
+        avgSpeedTV = findViewById(R.id.Statistics_distanceToday);
+        timeTV     = findViewById(R.id.Statistics_timeToday);
         dateTV     = findViewById(R.id.ViewSingleJourney_dateText);
         ratingTV   = findViewById(R.id.ViewSingleJourney_ratingText);
         commentTV  = findViewById(R.id.ViewSingleJourney_commentText);

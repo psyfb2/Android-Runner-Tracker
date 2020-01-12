@@ -32,7 +32,7 @@
             tools:layout_editor_absoluteY="8dp">
 
             <TextView
-                android:id="@+id/ViewSingleJourney_avgSpeed"
+                android:id="@+id/Statistics_distanceToday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="25dp"
@@ -72,7 +72,7 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
-                android:id="@+id/ViewSingleJourney_durationText"
+                android:id="@+id/Statistics_timeToday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="25dp"
@@ -84,7 +84,7 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
-                android:id="@+id/ViewSingleJourney_distanceText"
+                android:id="@+id/Statistics_recordDistance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="25dp"
@@ -92,7 +92,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@android:color/holo_green_dark"
                 android:textSize="18sp"
-                app:layout_constraintBaseline_toBaselineOf="@+id/tv2"
+                app:layout_constraintBaseline_toBaselineOf="@+id/tv34"
                 app:layout_constraintEnd_toEndOf="parent" />
 
 
@@ -135,10 +135,10 @@
                 android:textColor="@android:color/holo_green_dark"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv2" />
+                app:layout_constraintTop_toBottomOf="@+id/tv34" />
 
             <TextView
-                android:id="@+id/tv2"
+                android:id="@+id/tv34"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
