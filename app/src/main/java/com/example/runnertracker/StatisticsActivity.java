@@ -197,7 +197,6 @@ public class StatisticsActivity extends AppCompatActivity {
                     } finally {
                         c.close();
                     }
-
                 } catch(Exception e) {
                     e.printStackTrace();
                 }

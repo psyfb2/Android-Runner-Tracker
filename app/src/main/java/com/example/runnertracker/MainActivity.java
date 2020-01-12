@@ -27,12 +27,11 @@ TO DO
     5. Allow user to add comments about a certain journey (DONE)
     6. Allow user to see a list of recorded journeys filtered by date (DONE)
     7. Clicking on a recorded journey displays more information (rating, comments, picture, time, distance, average speed, path on google maps) (DONE)
-    8. Allow user to see statistics page which shows how far ran today, this week, this month, all time and could graph these
+    8. Allow user to see statistics page which shows how far ran today, this week, this month, all time and could graph these (DONE)
     9. Allow user to set a goal for km to run every week, display whether the goal has been reached or not in the app. (DONE)
     10. Ask user for GPS permissions (DONE)
-    11 Allow tracking of cycling
-    12. broadcast receiver so that when battery is low do fewer GPS requests (DONE)
-    13. Display notification while tracking a journey (DONE)
+    11. broadcast receiver so that when battery is low do fewer GPS requests (DONE)
+    12. Display notification while tracking a journey (DONE)
 
     Need
         - Service (for GPS tracking)
