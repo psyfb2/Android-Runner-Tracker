@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
@@ -25,11 +26,13 @@ TO DO
     4. Allow user to rate a journey out of 5 (DONE)
     5. Allow user to add comments about a certain journey (DONE)
     6. Allow user to see a list of recorded journeys filtered by date (DONE)
-    7. Clicking on a recorded journey displays more information (rating, comments, picture, time, distance, average speed, path on google maps) (DONE apart from maps)
+    7. Clicking on a recorded journey displays more information (rating, comments, picture, time, distance, average speed, path on google maps) (DONE)
     8. Allow user to see statistics page which shows how far ran today, this week, this month, all time and could graph these
     9. Allow user to set a goal for km to run every week, display whether the goal has been reached or not in the app.
     10. Ask user for GPS permissions (DONE)
     11 Allow tracking of cycling
+    12. broadcast receiver so that when battery is low do fewer GPS requests (DONE)
+    13. Display notification while tracking a journey (DONE)
 
     Need
         - Service (for GPS tracking)
@@ -47,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
     }
 
     public void onClickRecord(View v) {

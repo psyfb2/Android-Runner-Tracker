@@ -4,11 +4,15 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.content.Context;
 import android.location.Location;
@@ -33,6 +37,9 @@ public class LocationService extends Service {
     private long startTime = 0;
     private long stopTime = 0;
 
+    final int TIME_INTERVAL = 3;
+    final int DIST_INTERVAL = 3;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -42,13 +49,32 @@ public class LocationService extends Service {
         locationListener = new MyLocationListener();
         locationListener.recordLocations = false;
 
+
         try {
-            locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 3, 3, locationListener);
+            locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, TIME_INTERVAL, DIST_INTERVAL, locationListener);
         } catch(SecurityException e) {
             // don't have the permission to access GPS
             Log.d("mdp", "No Permissions for GPS");
         }
+
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent,  flags, startId);
+
+        // broadcast receiver may send message about low battery in which bundle containing battery will exist
+        if(intent != null) {
+            Bundle b = intent.getExtras();
+            if(b != null && b.getBoolean("battery")) {
+                // slow down GPS request frequency
+                changeGPSRequestFrequency(TIME_INTERVAL * 3, DIST_INTERVAL * 3);
+            }
+        }
+
+        return START_NOT_STICKY;
+    }
+
 
     private void addNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -90,6 +116,7 @@ public class LocationService extends Service {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_ID);
+
         Log.d("mdp", "Location Service destroyed");
     }
 
@@ -165,7 +192,20 @@ public class LocationService extends Service {
         Log.d("mdp", "Journey saved with id = " + journeyID);
     }
 
-    public void notifyGPSEnabled() {
+    protected void changeGPSRequestFrequency(int time, int dist) {
+        // can be used ot change GPS request frequency for battery conservation
+        try {
+            locationManager.removeUpdates(locationListener);
+            locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, time, dist, locationListener);
+            Log.d("mdp", "New min time = " + time + ", min dist = " + dist);
+        } catch(SecurityException e) {
+            // don't have the permission to access GPS
+            Log.d("mdp", "No Permissions for GPS");
+        }
+    }
+
+
+    protected void notifyGPSEnabled() {
         try {
             locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 3, 3, locationListener);
         } catch(SecurityException e) {
@@ -203,5 +243,7 @@ public class LocationService extends Service {
         }
 
         public void notifyGPSEnabled() { LocationService.this.notifyGPSEnabled();}
+
+        public void changeGPSRequestFrequency(int time, int dist) {LocationService.this.changeGPSRequestFrequency(time, dist);}
     }
 }

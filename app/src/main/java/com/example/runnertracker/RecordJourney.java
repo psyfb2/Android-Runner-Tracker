@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -136,6 +137,11 @@ public class RecordJourney extends AppCompatActivity {
         stopButton.setEnabled(false);
         playButton.setEnabled(false);
 
+        // register broadcast receiver to receive low battery broadcasts
+        MyReceiver receiver = new MyReceiver();
+        registerReceiver(receiver, new IntentFilter(
+                Intent.ACTION_BATTERY_LOW));
+
         handlePermissions();
 
         // start the service so that it persists outside of the lifetime of this activity
@@ -170,6 +176,10 @@ public class RecordJourney extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        // un-register this receiver since we only need it while recording GPS
+        MyReceiver receiver = new MyReceiver();
+        unregisterReceiver(receiver);
 
         // unbind to the service (if we are the only binding activity then the service will be destroyed)
         if(lsc != null) {
