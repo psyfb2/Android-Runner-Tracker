@@ -65,7 +65,6 @@ public class ViewJourneys extends ListActivity {
         public long get_id() {
             return _id;
         }
-
     }
 
     /* ListView should display journey name along side a custom image uploaded by the user */
