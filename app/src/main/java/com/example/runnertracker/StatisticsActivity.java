@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
@@ -18,6 +19,8 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -159,9 +162,38 @@ public class StatisticsActivity extends AppCompatActivity {
 
 
                 // load journeys for this week to display on the bar chart
-                Calendar cal = Calendar.getInstance();
-                cal.add( Calendar.DAY_OF_WEEK, -(cal.get(Calendar.DAY_OF_WEEK)-1));
-                System.out.println(cal.get(Calendar.DATE));
+                ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
+                try {
+                    Calendar cal = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    cal.setTime(sdf.parse(date));
+
+                    // set the calendar to monday of the current week
+                    cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+
+                    // print dates of the current week starting on Monday
+                    String mon = sdf.format(cal.getTime());
+                    for (int i = 0; i <6; i++) {
+                        cal.add(Calendar.DATE, 1);
+                    }
+                    String sun = sdf.format(cal.getTime());
+
+                    Log.d("mdp", "Mon = " + mon + ", Sun = " + sun);
+                    c = getContentResolver().query(JourneyProviderContract.JOURNEY_URI,
+                            null, JourneyProviderContract.J_DATE + " BETWEEN ? AND ?",
+                            new String[] {mon, sun}, null);
+                    try {
+                        for(int i = 0; c.moveToNext(); i++) {
+                            entries.add(new BarEntry((float) c.getDouble(c.getColumnIndex(JourneyProviderContract.J_distance)), i));
+                        }
+                    } finally {
+                        c.close();
+                    }
+
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                final ArrayList<BarEntry> entries_ = entries;
 
                 // post back text view updates to UI thread
                 postBack.post(new Runnable() {
@@ -170,6 +202,7 @@ public class StatisticsActivity extends AppCompatActivity {
                        timeToday.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
                        recordDistance.setText(String.format("%.2f KM", recordDistanceKM_));
                        distanceAllTime.setText(String.format("%.2f KM", totalDistanceKM_));
+                       loadBarChart(entries_);
                    }
                 });
             }
@@ -178,16 +211,8 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
 
-    private void loadBarChart() {
-        ArrayList<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(8f, 0));
-        entries.add(new BarEntry(2f, 1));
-        entries.add(new BarEntry(5f, 2));
-        entries.add(new BarEntry(20f, 3));
-        entries.add(new BarEntry(15f, 4));
-        entries.add(new BarEntry(19f, 5));
-
-        BarDataSet bardataset = new BarDataSet(entries, "Cells");
+    private void loadBarChart(ArrayList<BarEntry> entries) {
+        BarDataSet bardataset = new BarDataSet(entries, "Days");
 
         ArrayList<String> labels = new ArrayList<String>();
         labels.add("Mon");
@@ -200,7 +225,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
         BarData data = new BarData(labels, bardataset);
         barChart.setData(data); // set the data and list of labels into chart
-        barChart.setDescription("Set Bar Chart Description Here");  // set the description
+        barChart.setDescription("Distance ran for each day of week of selected date");  // set the description
         bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
         barChart.animateY(5000);
     }
